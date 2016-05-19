@@ -1,0 +1,43 @@
+  .arch armv6k
+  .fpu vfp
+  .arm
+  .align  2
+  
+  #include "defines.h"
+  
+  .text
+  
+  @ global label macro
+  .macro globll name
+    .global \name
+    .type \name,%function
+    \name:
+  .endm
+
+  .section .rodata
+
+globll begin_msg
+  .ascii "MNES3D ", VERSION, "\n"
+  .ascii "Start-up successful.\n\0"
+
+globll romfs_failure_message
+  .ascii "romfs initialization failed.\0"
+
+globll header_failure_message
+  .ascii "invalid iNES header.\0"
+
+globll romfs_success
+  .ascii "romfs initialization successful.\n\0"
+
+globll rom_load_success
+  .ascii "nesasm.nes load successful.\n\0"
+
+globll rom_name
+  .ascii "romfs:/nesasm.nes\0"
+
+globll open_type
+  .ascii "r\0"
+
+globll nes_header
+  .ascii "NES"
+  .byte 0x1A
