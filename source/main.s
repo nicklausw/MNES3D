@@ -13,10 +13,16 @@ main:
   
   bl  gfxInitDefault
   
-  @ set frame to 0
-  ldr r1, =frame
-  movs r0, #0
+  @ set pc to $c000
+  ldr r1, =pc_emu
+  ldr r0, =0xc000
   str r0, [r1]
+  
+  @ set offset to 0x10
+  ldr r1, =offset
+  mov r0, #0x10
+  str r0, [r1]
+  
   
   movs r0, #GFX_BOTTOM
   movs r1, #NULL
@@ -43,6 +49,7 @@ main:
   ldr r0, =rom_data
   ldr r1, =(8192*3)+16
   bl fgets
+  bl fclose
   
   ldr r0, =rom_load_success
   bl iprintf
@@ -73,6 +80,9 @@ loop: @ do {
   mov  r0, #2
   bl  gspWaitForEvent
   
+  @ emulate, what else?
+  bl emulate
+  
   @ get input
   bl  hidScanInput
   
@@ -80,6 +90,7 @@ loop: @ do {
   bl  hidKeysDown
   tst  r0, #8
   bne  done
+  
   
   @ flush/swap framebuffers
   bl  gfxFlushBuffers

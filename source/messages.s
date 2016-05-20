@@ -4,15 +4,9 @@
   .align  2
   
   #include "defines.h"
+  #include "macros.h"
   
   .text
-  
-  @ global label macro
-  .macro globll name
-    .global \name
-    .type \name,%function
-    \name:
-  .endm
 
   .section .rodata
 

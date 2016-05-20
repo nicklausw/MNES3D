@@ -2,14 +2,10 @@
   .fpu vfp
   .arm
   .align  2
-
-  @ global label macro
-  .macro globll name
-    .global \name
-    .type \name,%function
-    \name:
-  .endm
-
+  
+  #include "macros.h"
+  
+  .text
 
 globll romfs_failed
   ldr r0, =romfs_failure_message
