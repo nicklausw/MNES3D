@@ -20,6 +20,9 @@ globll romfs_failure_message
 globll header_failure_message
   .ascii "invalid iNES header.\0"
 
+globll opcode_failure_message
+  .ascii "unknown opcode: 0x%02x.\0"
+
 globll romfs_success
   .ascii "romfs initialization successful.\n\0"
 

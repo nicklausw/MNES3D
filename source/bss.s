@@ -15,4 +15,5 @@
    variable offset, 4
    variable pc_emu, 4
    variable opcode, 1
+   variable status_reg, 1
    

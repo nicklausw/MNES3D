@@ -17,5 +17,11 @@ globll invalid_header
   bl iprintf
   b failed_inf
 
+globll unknown_opcode
+  mov r1, r0
+  ldr r0, =opcode_failure_message
+  bl iprintf
+  b failed_inf
+
 globll failed_inf
    b failed_inf
