@@ -34,7 +34,8 @@ main:
   
   @ now to load that rom!
   @ nesasm.nes.
-  bl romfsInit
+  movs r0, #NULL
+  bl romfsMount
   cmp r0, #0
   bne romfs_failed
   
@@ -45,10 +46,11 @@ main:
   ldr r1, =open_type
   bl fopen
   
-  mov r2, r0
+  mov r3, r0
+  mov r2, #1
   ldr r0, =rom_data
   ldr r1, =(8192*3)+16
-  bl fgets
+  bl fread
   bl fclose
   
   ldr r0, =rom_load_success

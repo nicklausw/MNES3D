@@ -33,7 +33,7 @@ globll rom_name
   .ascii "romfs:/nesasm.nes\0"
 
 globll open_type
-  .ascii "r\0"
+  .ascii "rb\0"
 
 globll nes_header
   .ascii "NES"
