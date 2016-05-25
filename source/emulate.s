@@ -24,6 +24,18 @@ get_byte:
   bx lr
 
 
+get_word:
+  stmfd  sp!, {lr}
+  
+  bl get_byte
+  mov r1, r0
+  bl get_byte
+  lsl r0, #8
+  orr r0, r1
+  
+  ldmfd  sp!, {lr}
+  bx lr
+  
 globll emulate
   stmfd  sp!, {lr}
   
@@ -41,20 +53,20 @@ globll emulate
   ldr r1, =opcode
   ldrb r0, [r1]
   
-  cmp r0, #0x78 ; beq sei
-  cmp r0, #0xd8 ; beq cld
-  cmp r0, #0x20 ; beq jsr
-  cmp r0, #0xad ; beq lda_16_addr
-  cmp r0, #0xa9 ; beq lda_8_imm
-  cmp r0, #0xa2 ; beq ldx_8_imm
-  cmp r0, #0x9d ; beq sta_ind_x
-  cmp r0, #0xd0 ; beq bne_x
-  cmp r0, #0xe8 ; beq inx
-  cmp r0, #0x8e ; beq stx_nzp
-  cmp r0, #0x8d ; beq sta_nzp
-  cmp r0, #0x9a ; beq txs
-  cmp r0, #0x10 ; beq bpl
-  cmp r0, #0x60 ; beq rts
+  instr 0x78, sei
+  instr 0xd8, cld
+  instr 0x20, jsr
+  instr 0xad, lda_16_addr
+  instr 0xa9, lda_8_imm
+  instr 0xa2, ldx_8_imm
+  instr 0x9d, sta_ind_x
+  instr 0xd0, bne_x
+  instr 0xe8, inx
+  instr 0x8e, stx_nzp
+  instr 0x8d, sta_nzp
+  instr 0x9a, txs
+  instr 0x10, bpl
+  instr 0x60, rts
   
   bl unknown_opcode
   mov r0, #1
@@ -68,18 +80,14 @@ sei:
   ldrb r0, [r1]
   orr r0, r0, #0b00000010
   strb r0, [r1]
-  mov r0, #0
-  ldmfd  sp!, {lr}
-  bx lr
+  end_instr
 
 cld:
   ldr r1, =status_reg
   ldrb r0, [r1]
   and r0, r0, #0b00001000
   strb r0, [r1]
-  mov r0, #0
-  ldmfd  sp!, {lr}
-  bx lr
+  end_instr
 
 jsr:
   ldr r0, =offset
@@ -87,27 +95,17 @@ jsr:
   ldr r1, =temp_space
   str r0, [r1]
   
-  bl get_byte
-  mov r1, r0
-  bl get_byte
-  lsl r0, #8
-  orr r0, r1
+  bl get_word
   
   sub r0, r0, #0xC000
   add r0, r0, #0x10
   ldr r1, =offset
   str r0, [r1]
   
-  mov r0, #0
-  ldmfd  sp!, {lr}
-  bx lr
+  end_instr
   
 lda_16_addr:
-  bl get_byte
-  mov r1, r0
-  bl get_byte
-  lsl r0, #8
-  orr r0, r1
+  bl get_word
   
   @ probably 2002
   ldr r1, =0x2002
@@ -122,48 +120,36 @@ lda_16_addr:
   
  .not_2002:
   
-  mov r0, #0
-  ldmfd  sp!, {lr}
-  bx lr
-
+  end_instr
+  
 lda_8_imm:
   bl get_byte
   ldr r1, =reg_x
   strb r0, [r1]
   
-  mov r0, #0
-  ldmfd  sp!, {lr}
-  bx lr
+  end_instr
 
 ldx_8_imm:
   bl get_byte
   ldr r1, =reg_a
   strb r0, [r1]
   
-  mov r0, #0
-  ldmfd  sp!, {lr}
-  bx lr
+  end_instr
 
 sta_ind_x:
   bl get_byte
   bl get_byte
-  mov r0, #0
-  ldmfd sp!, {lr}
-  bx lr
+  end_instr
 
 stx_nzp:
   bl get_byte
   bl get_byte
-  mov r0, #0
-  ldmfd sp!, {lr}
-  bx lr
+  end_instr
 
 sta_nzp:
   bl get_byte
   bl get_byte
-  mov r0, #0
-  ldmfd sp!, {lr}
-  bx lr
+  end_instr
 
 inx:
   ldr r1, =reg_x
@@ -174,7 +160,7 @@ inx:
   
   ldr r1, =status_reg
   ldrb r0, [r1]
-  and r0, r0, #~(1 << 1)
+  set_byte r0, 1
   strb r0, [r1]
   
   ldr r1, =reg_x
@@ -183,15 +169,11 @@ inx:
  .no_zero:
   strb r0, [r1]
   
-  mov r0, #0
-  ldmfd  sp!, {lr}
-  bx lr
+  end_instr
 
 txs:
   @ the stack? who cares...
-  mov r0, #0
-  ldmfd sp!, {lr}
-  bx lr
+  end_instr
 
 bne_x:
   bl get_byte
@@ -208,17 +190,13 @@ bne_x:
   str r1, [r2]
   
  .no_jump:
-  mov r0, #0
-  ldmfd  sp!, {lr}
-  bx lr
+  end_instr
   
 bpl:
   @ automatic redirect
   bl get_byte
   
-  mov r0, #0
-  ldmfd  sp!, {lr}
-  bx lr
+  end_instr
   
 rts:
   ldr r0, =temp_space
@@ -227,9 +205,7 @@ rts:
   ldr r1, =offset
   str r0, [r1]
   
-  mov r0, #0
-  ldmfd sp!, {lr}
-  bx lr
+  end_instr
 
 
 .section .rodata
