@@ -18,10 +18,12 @@ globll invalid_header
   b failed_inf
 
 globll unknown_opcode
+  stmfd  sp!, {lr}
   mov r1, r0
   ldr r0, =opcode_failure_message
   bl iprintf
-  b failed_inf
+  ldmfd  sp!, {lr}
+  bx lr
 
 globll failed_inf
    b failed_inf

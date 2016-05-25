@@ -56,7 +56,8 @@ globll emulate
   cmp r0, #0x10 ; beq bpl
   cmp r0, #0x60 ; beq rts
   
-  b unknown_opcode
+  bl unknown_opcode
+  mov r0, #1
   ldmfd  sp!, {lr}
   bx lr
 
@@ -67,6 +68,7 @@ sei:
   ldrb r0, [r1]
   orr r0, r0, #0b00000010
   strb r0, [r1]
+  mov r0, #0
   ldmfd  sp!, {lr}
   bx lr
 
@@ -75,6 +77,7 @@ cld:
   ldrb r0, [r1]
   and r0, r0, #0b00001000
   strb r0, [r1]
+  mov r0, #0
   ldmfd  sp!, {lr}
   bx lr
 
@@ -95,6 +98,7 @@ jsr:
   ldr r1, =offset
   str r0, [r1]
   
+  mov r0, #0
   ldmfd  sp!, {lr}
   bx lr
   
@@ -118,6 +122,7 @@ lda_16_addr:
   
  .not_2002:
   
+  mov r0, #0
   ldmfd  sp!, {lr}
   bx lr
 
@@ -126,6 +131,7 @@ lda_8_imm:
   ldr r1, =reg_x
   strb r0, [r1]
   
+  mov r0, #0
   ldmfd  sp!, {lr}
   bx lr
 
@@ -134,24 +140,28 @@ ldx_8_imm:
   ldr r1, =reg_a
   strb r0, [r1]
   
+  mov r0, #0
   ldmfd  sp!, {lr}
   bx lr
 
 sta_ind_x:
   bl get_byte
   bl get_byte
+  mov r0, #0
   ldmfd sp!, {lr}
   bx lr
 
 stx_nzp:
   bl get_byte
   bl get_byte
+  mov r0, #0
   ldmfd sp!, {lr}
   bx lr
 
 sta_nzp:
   bl get_byte
   bl get_byte
+  mov r0, #0
   ldmfd sp!, {lr}
   bx lr
 
@@ -172,11 +182,14 @@ inx:
   
  .no_zero:
   strb r0, [r1]
+  
+  mov r0, #0
   ldmfd  sp!, {lr}
   bx lr
 
 txs:
   @ the stack? who cares...
+  mov r0, #0
   ldmfd sp!, {lr}
   bx lr
 
@@ -195,12 +208,15 @@ bne_x:
   str r1, [r2]
   
  .no_jump:
+  mov r0, #0
   ldmfd  sp!, {lr}
   bx lr
   
 bpl:
   @ automatic redirect
   bl get_byte
+  
+  mov r0, #0
   ldmfd  sp!, {lr}
   bx lr
   
@@ -211,6 +227,7 @@ rts:
   ldr r1, =offset
   str r0, [r1]
   
+  mov r0, #0
   ldmfd sp!, {lr}
   bx lr
 

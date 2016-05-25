@@ -76,14 +76,16 @@ main:
   cmp r4, #3
   bne .check_header
   
+ .emu_loop:
+  bl emulate
+  tst r0, #1
+  beq .emu_loop
+  
 loop: @ do {
   @ wait for vblank
   mov  r1, #1
   mov  r0, #2
   bl  gspWaitForEvent
-  
-  @ emulate, what else?
-  bl emulate
   
   @ get input
   bl  hidScanInput
