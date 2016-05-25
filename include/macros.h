@@ -16,6 +16,10 @@
   
   @ emulation macros
   .macro set_byte reg, byte_arg
+    orr \reg, \reg, #1 << \byte_arg
+  .endm
+  
+  .macro clear_byte reg, byte_arg
     and \reg, \reg, #~(1 << \byte_arg)
   .endm
   
