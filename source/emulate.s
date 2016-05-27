@@ -10,8 +10,6 @@
   
 get_byte:
   ldr r3, =rom_data
-  ldr r0, =offset
-  ldr r0, [r0]
   add r3, r3, r0
   ldrb r0, [r3]
   
@@ -22,6 +20,7 @@ get_byte_pc:
   stmfd  sp!, {lr}
   
   ldr r0, =offset
+  ldr r0, [r0]
   bl get_byte
   
   @ raise offset
@@ -142,8 +141,18 @@ lda_16_addr:
   clear_byte r0, 7
   strb r0, [r1]
   
+  b .l16a_end
  .not_2002:
+  cmp r0, #0xC000
+  blt .l16a_end
   
+  sub r0, r0, #0xC000
+  add r0, r0, #0x10
+  bl get_byte
+  ldr r1, =reg_a
+  strb r0, [r1]
+  
+ .l16a_end:
   end_instr
 
 lda_16_addr_x:
@@ -174,7 +183,7 @@ lda_16_addr_x:
   
 lda_8_imm:
   bl get_byte_pc
-  ldr r1, =reg_x
+  ldr r1, =reg_a
   strb r0, [r1]
   
   end_instr
