@@ -181,7 +181,7 @@ lda_8_imm:
 
 ldx_8_imm:
   bl get_byte_pc
-  ldr r1, =reg_a
+  ldr r1, =reg_x
   strb r0, [r1]
   
   end_instr

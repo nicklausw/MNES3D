@@ -78,7 +78,7 @@ main:
   
  .emu_loop:
   bl emulate
-  tst r0, #1
+  tst r0, #(1<<0)
   beq .emu_loop
   
 loop: @ do {
